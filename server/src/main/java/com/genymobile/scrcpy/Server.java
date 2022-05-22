@@ -5,6 +5,7 @@ import android.media.MediaCodecInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -76,8 +77,8 @@ public final class Server {
                 Size videoSize = device.getScreenInfo().getVideoSize();
                 connection.sendDeviceMeta(Device.getDeviceName(), videoSize.getWidth(), videoSize.getHeight());
             }
-            ScreenEncoder screenEncoder = new ScreenEncoder(options.getSendFrameMeta(), options.getBitRate(), options.getMaxFps(), codecOptions,
-                    options.getEncoderName(), options.getDownsizeOnError());
+            // ScreenEncoder screenEncoder = new ScreenEncoder(options.getSendFrameMeta(), options.getBitRate(), options.getMaxFps(), codecOptions,
+            //         options.getEncoderName(), options.getDownsizeOnError());
 
             Thread controllerThread = null;
             Thread deviceMessageSenderThread = null;
@@ -98,7 +99,12 @@ public final class Server {
 
             try {
                 // synchronous
-                screenEncoder.streamScreen(device, connection.getVideoFd());
+                // screenEncoder.streamScreen(device, connection.getVideoFd());
+                byte[] buffer = new byte[512];
+                FileInputStream s = new FileInputStream(connection.getVideoFd());
+                while (true) {
+                    s.read(buffer);
+                }
             } catch (IOException e) {
                 // this is expected on close
                 Ln.d("Screen streaming stopped");
